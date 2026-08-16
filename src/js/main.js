@@ -578,13 +578,65 @@ class App {
   /* ------------------------------------------------------------ */
 
   bindFoodLogEvents() {
-    document.getElementById("clear-foodlog")?.addEventListener("click", async () => {
-      const ok = await confirmDialog("Clear all logged meals for today?");
-      if (ok) {
-        this.foodLog.clearDay();
-        this.refreshFoodLogUI();
-        toast("Food log cleared");
-      }
+    document.getElementById("clear-foodlog")?.addEventListener("click", () => {
+      const modal = document.createElement("div");
+
+      modal.className =
+        "fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4";
+
+      modal.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 text-center">
+
+          <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+            <i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl"></i>
+          </div>
+
+          <h3 class="text-xl font-bold text-gray-900 mb-2">
+            Clear All Meals?
+          </h3>
+
+          <p class="text-gray-500 mb-6">
+            Are you sure you want to delete all logged meals for today?
+            This action cannot be undone.
+          </p>
+
+          <div class="flex gap-3">
+            <button
+              id="cancel-clear-foodlog"
+              class="flex-1 px-5 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition"
+            >
+              Cancel
+            </button>
+
+            <button
+              id="confirm-clear-foodlog"
+              class="flex-1 px-5 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition"
+            >
+              <i class="fa-solid fa-trash mr-2"></i>
+              Delete All
+            </button>
+          </div>
+
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      document
+        .getElementById("cancel-clear-foodlog")
+        .addEventListener("click", () => {
+          modal.remove();
+        });
+
+      document
+        .getElementById("confirm-clear-foodlog")
+        .addEventListener("click", () => {
+          this.foodLog.clearDay();
+          this.refreshFoodLogUI();
+          toast("All logged items have been removed successfully");
+
+          modal.remove();
+        });
     });
 
     document.getElementById("logged-items-list")?.addEventListener("click", (e) => {
